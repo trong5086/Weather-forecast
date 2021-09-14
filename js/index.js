@@ -13,7 +13,7 @@ let humidity=$('.humidity')
 let windSpeed=$('.wind-speed')
 
 search.addEventListener('change', function(e){
-    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${e.target.value}&appid=${API_KEY}&lang=vi&units=metric`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${e.target.value}&appid=${API_KEY}&lang=vi&units=metric`)
     .then(async response=>{
         const data=await response.json()
         console.log(data)
