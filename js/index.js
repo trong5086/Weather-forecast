@@ -28,4 +28,76 @@ search.addEventListener('change', function(e){
     })
 })
 
+
+
+//tro ly ao
+var SpeechRecognition=SpeechRecognition||webkitSpeechRecognition;
+let recognition=new SpeechRecognition();
+const microphone=$('.fa-microphone')
+const synth=window.speechSynthesis;
+
+recognition.lang = 'vi-VI';
+recognition.continuous=false;
+
+const speak=(text)=>{
+    if(synth.speaking){
+        console.log('Busy, Speaking.....')
+        return;
+    }
+    const utter=new SpeechSynthesisUtterance(text);
+    utter.onend=()=>{
+        console.log('SpeechSynthesisUtterance.onend')
+    }
+    utter.onerror=(error)=>{
+        console.error('SpeechSynthesisUtterance.onerror',error)
+    }
+    synth.speak(utter)
+}
+handleVoice=(text)=>{
+    console.log(text)
+    const handleText=text.toLowerCase();
+    if(handleText.includes('thời tiết tại')){
+        const location=handleText.split('tại')[1].trim();
+        search.value=location
+        const changeEvent=new Event('change')
+        search.dispatchEvent(changeEvent)
+        return;
+    }
+    if(handleText.includes('thay đổi màu nền'))
+    {
+        const color=handleText.split('màu nền')[1].trim();
+        $('.container').style.background=color
+        return;
+    }
+    if(handleText.includes('màu mặc định'))
+    {
+        $('.container').style.background=''
+        return;
+    }
+    if(handleText.includes('mấy giờ')){
+        const textToSpeech = `${moment().hours()} hours ${moment().minutes()} minutes`
+        console.log(textToSpeech)
+        speak(textToSpeech)
+        return;
+    }
     
+    speak('Try again')
+}
+microphone.addEventListener('click',(e)=>{
+    e.preventDefault();
+    recognition.start();
+    $('.voice-icon').classList.add('recording')
+})
+recognition.onspeechend=()=>{
+    recognition.stop()
+    $('.voice-icon').classList.remove('recording')
+}
+recognition.onerror=(error)=>{
+    console.error(error)
+    $('.voice-icon').classList.remove('recording')
+}
+
+recognition.onresult=(e)=>{
+   const text=e.results[0][0].transcript
+   handleVoice(text)
+}
